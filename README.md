@@ -93,8 +93,8 @@ serverless_aqi_forecasting_pipeline/
 1. Clone repository
 
 ```bash
-git clone https://github.com/ShehrazSarwar/pearls-aqi-predictor.git
-cd pearls-aqi-predictor
+git clone https://github.com/shery0099x/serverless_aqi_forecasting_pipeline.git
+cd serverless_aqi_forecasting_pipeline
 ```
 
 2. Install dependencies
