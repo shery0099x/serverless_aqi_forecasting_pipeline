@@ -220,6 +220,10 @@ streamlit run app/app.py
 
 The project is operational with automated ingestion, training, registry updates, and dashboard delivery.
 
+## 🛰️ Model Accuracy as compared to real world Aqi predictors
+
+An aqi difference of 10 to 16 points is observed with comparison with some aqi predictors but majorly its predictions are accurate. Other constraints like pm2.5 and pm10 etc are mostly accurate.
+
 ## 🧾 Author
 
 Built by **Shehryar Naveed**.
