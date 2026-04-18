@@ -1,221 +1,246 @@
-# 🌫️ AQI Predictor — Pearls ML Project
+# 🧭 Pearls AQI Predictor: End-to-End MLOps for Air Quality Forecasting
 
-> Predict the Air Quality Index (AQI) for your city **3 days ahead** using a
-> fully serverless, automated ML pipeline — no servers to manage, no cloud bills.
+![Hourly Data](https://github.com/ShehrazSarwar/pearls-aqi-predictor/actions/workflows/hourly_data.yml/badge.svg) ![Daily Training](https://github.com/ShehrazSarwar/pearls-aqi-predictor/actions/workflows/daily_model.yml/badge.svg)
 
----
+[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/ShehrazSarwar/pearls-aqi-predictor)
+[![Project Report](https://img.shields.io/badge/📘_Read-Project_Report-1f6feb?style=for-the-badge)](https://github.com/ShehrazSarwar/pearls-aqi-predictor/blob/main/Project%20Report.pdf)
 
-## 📌 Project Overview
+## 🌐 Live App
 
-This project builds an end-to-end machine learning system for AQI forecasting using
-a four-pipeline architecture:
+The Streamlit dashboard is deployed on Hugging Face Spaces and serves real-time AQI insights and 3-day forecasts.
 
-| Pipeline | Trigger | What it does |
-|---|---|---|
-| **Feature pipeline** | Every hour (GitHub Actions) | Fetches AQI + weather data, engineers features, upserts to Feature Store |
-| **Backfill pipeline** | Run once manually | Populates the Feature Store with 12–18 months of historical (features, targets) |
-| **Training pipeline** | Every day (GitHub Actions) | Trains Ridge, Random Forest, XGBoost; picks the best; registers in Model Registry |
-| **Dashboard** | On-demand (Streamlit) | Loads model + features, shows 3-day forecast, SHAP charts, and hazard alerts |
+[![Live App](https://img.shields.io/badge/🌐_Open-Live_Dashboard-FFD21E)](https://shehrazsarwar-pearls-aqi-predictor.hf.space) ![App Status](https://img.shields.io/uptimerobot/status/m802311568-4042ffeb7e3e59da40bb521d?style=flat-square&logo=statuspage&label=App%20Status&up_color=brightgreen)
 
----
+### 🛰️ Availability Monitoring
 
-## 🏗️ Architecture
+To keep a serverless deployment responsive, the app receives scheduled heartbeat checks from UptimeRobot every 5 minutes.
 
-```
-Weather & AQI APIs  ──►  Feature Pipeline  ──►  Feature Store (Hopsworks)
-                                                        │
-                         Backfill Pipeline  ────────────┤
-                                                        │
-                         Training Pipeline  ◄───────────┤
-                                │                       │
-                          Model Registry  ──────────────┤
-                                                        │
-                         Streamlit Dashboard  ◄─────────┘
-```
+## 📘 Project Overview
 
----
+This repository implements a production-style MLOps system for forecasting PM2.5 concentration in Karachi, Pakistan across three horizons: 24h, 48h, and 72h.
 
-## 📂 Project Structure
+Core stack:
 
-```
-aqi_predictor/
-├── .github/
-│   └── workflows/
-│       ├── feature_pipeline.yml    # Cron: every hour
-│       └── training_pipeline.yml  # Cron: every day at 02:00 UTC
-│
+1. GitHub Actions for hourly and daily orchestration
+2. MongoDB Atlas for raw and engineered data storage
+3. DagsHub MLflow for experiment tracking and model registry
+4. Streamlit for interactive forecast reporting
+
+The objective is not only forecasting, but continuous model improvement through automated retraining and champion promotion.
+
+## 🧩 Key Capabilities
+
+1. 🗄️ Hourly data ingestion from Open-Meteo weather and air-quality endpoints
+2. 🧪 Feature engineering with lags, rolling stats, cyclical features, and interaction signals
+3. 🧠 Daily multi-model training (XGBoost, LightGBM, Random Forest)
+4. 🏆 Automatic winner selection using validation metrics
+5. 📦 Versioned registration in MLflow Model Registry
+6. 🔁 Champion-vs-challenger promotion flow
+7. 📡 Streamlit dashboard with forecast tables, trend charts, and health guidance
+
+## 🧭 Architecture
+
+![System Architecture](System_Architecture.png "AQI Predictor System Architecture")
+
+## 🛠️ Pipeline Workflow
+
+### 1. Hourly Data Pipeline (`hourly_data.yml`)
+
+Runs every hour to keep data fresh.
+
+1. `scripts/data_extraction.py`
+   Fetches recent meteorological and pollutant values from Open-Meteo and writes incremental records into `raw_data`.
+
+2. `scripts/feature_engineering.py`
+   Builds model-ready features and target horizons (`target_h24`, `target_h48`, `target_h72`) and syncs them to `feature_store`.
+
+### 2. Daily Model Pipeline (`daily_model.yml`)
+
+Runs daily to retrain and refresh production quality.
+
+1. `scripts/model_train.py`
+   Loads engineered data, trains candidate models, compares metrics, logs experiments to MLflow, and registers the winning model as a new version.
+
+2. `scripts/promote_model.py`
+   Compares latest version with current champion and updates alias when performance or freshness rules are met.
+
+## 📁 Repository Layout
+
+```text
+.
+pearls-aqi-predictor/
+├── .github/workflows/
+│   ├── hourly_data.yml
+│   └── daily_model.yml
 ├── app/
-│   └── dashboard.py               # Streamlit web dashboard
-│
-├── config/
-│   └── settings.py                # All config loaded from .env
-│
+│   └── app.py
+├── automation_scripts/
+│   ├── hourly_data_pipeline.py
+│   └── daily_model_pipeline.py
+├── scripts/
+│   ├── data_extraction.py
+│   ├── feature_engineering.py
+│   ├── model_train.py
+│   └── promote_model.py
 ├── notebooks/
-│   └── eda.py                     # Exploratory data analysis script
-│
-├── pipelines/
-│   ├── feature_pipeline.py        # Pipeline 1 — hourly data collection
-│   ├── backfill_pipeline.py       # Pipeline 2 — historical data load
-│   └── training_pipeline.py      # Pipeline 3 — daily model training
-│
-├── tests/
-│   └── test_feature_engineering.py
-│
-├── utils/
-│   ├── aqi_helpers.py             # AQI classification + health advice
-│   └── logger.py                  # Shared loguru logger
-│
-├── .env.example                   # Template for environment variables
-├── .gitignore
+├── test_notebooks/
+├── test_scripts/
+├── models/
 ├── requirements.txt
-├── README.md
-└── DOCUMENTATION.md               # Full technical documentation
+├── requirements-ci.txt
+└── README.md
 ```
 
----
+## 🧰 Prerequisites
 
-## ⚡ Quick Start
+1. Python 3.10+
+2. MongoDB Atlas account
+3. DagsHub account
+4. Git installed locally
 
-### 1. Clone and install
+## ⤴️ Installation
+
+1. Clone repository
 
 ```bash
-git clone https://github.com/yourusername/aqi_predictor.git
-cd aqi_predictor
-python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+git clone https://github.com/ShehrazSarwar/pearls-aqi-predictor.git
+cd pearls-aqi-predictor
+```
+
+2. Install dependencies
+
+```bash
 pip install -r requirements.txt
+pip install -r requirements-ci.txt
 ```
 
-### 2. Configure environment
+## 🗄️ Complete MongoDB Atlas Setup
+
+### 1. Create Atlas Cluster
+
+1. Sign in to MongoDB Atlas
+2. Create a new project (example: `aqi-predictor`)
+3. Create an M0 free cluster (or higher tier)
+4. Choose cloud provider/region closest to deployment
+
+### 2. Create Database User
+
+1. Go to `Security` -> `Database Access`
+2. Add user with username/password
+3. Grant `Read and write to any database` (or scoped permissions if preferred)
+
+### 3. Configure Network Access
+
+1. Go to `Security` -> `Network Access`
+2. Add current IP, or `0.0.0.0/0` for development/testing
+3. Save allowlist rule
+
+### 4. Get Connection String
+
+1. Open cluster -> `Connect` -> `Drivers`
+2. Copy URI in this format:
+
+```text
+mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority
+```
+
+### 5. Database and Collections Used by This Project
+
+1. Database: `aqi_predictor` (default if not overridden)
+2. Collections:
+   1. `raw_data`
+   2. `feature_store`
+
+No manual collection creation is required; scripts create them automatically on first write.
+
+## 🧠 Complete DagsHub + MLflow Setup
+
+### 1. Create DagsHub Account and Repository
+
+1. Sign in at DagsHub
+2. Create repository (or link existing GitHub repo)
+
+### 2. Generate Access Token
+
+1. Go to profile settings -> tokens
+2. Create a token with repository/MLflow access
+3. Copy token securely
+
+### 3. Identify MLflow Tracking URI
+
+Use the repository MLflow endpoint, commonly:
+
+```text
+https://dagshub.com/<username>/<repo-name>.mlflow
+```
+
+### 4. Set Environment Variables
+
+Create `.env` in project root:
+
+```env
+# MongoDB
+MONGO_URI="mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority"
+DB_NAME="aqi_predictor"
+
+# MLflow via DagsHub
+MLFLOW_TRACKING_USERNAME="<dagshub_username>"
+MLFLOW_TRACKING_PASSWORD="<dagshub_access_token>"
+MLFLOW_TRACKING_URI="https://dagshub.com/<dagshub_username>/<repo-name>.mlflow"
+
+# Optional: if you want a custom feature collection name for training script
+COLLECTION_NAME="feature_store"
+```
+
+### 5. Verify DagsHub Connectivity (Optional Quick Test)
 
 ```bash
-cp .env.example .env
-# Open .env and fill in your API keys (see DOCUMENTATION.md for how to get each one)
+python -c "import os, mlflow; from dotenv import load_dotenv; load_dotenv(); mlflow.set_tracking_uri(os.getenv('MLFLOW_TRACKING_URI')); print('Tracking URI:', mlflow.get_tracking_uri())"
 ```
 
-### 3. Run the backfill (one-time)
+## ✨ Running the Project
+
+### A. Run Data Pipeline
 
 ```bash
-python -m pipelines.backfill_pipeline \
-    --start 2023-01-01 \
-    --end   2024-12-31 \
-    --source csv \
-    --csv-path data/lahore_historical_aqi.csv
+python automation_scripts/hourly_data_pipeline.py
 ```
 
-### 4. Run the feature pipeline manually (test)
+### B. Run Model Pipeline
 
 ```bash
-python -m pipelines.feature_pipeline
+python automation_scripts/daily_model_pipeline.py
 ```
 
-### 5. Train models
+### C. Run Streamlit App
 
 ```bash
-python -m pipelines.training_pipeline
+streamlit run app/app.py
 ```
 
-### 6. Launch dashboard
+## 📐 What You Get in the Dashboard
 
-```bash
-streamlit run app/dashboard.py
-```
+1. 🗺️ Current AQI status and category
+2. 🔭 24h, 48h, 72h forecast outputs
+3. 📡 Interactive trend visualizations
+4. 🩺 Health guidance per forecast day
+5. 💾 Downloadable 7-day report CSV
 
----
+## 🎉 Current Status
 
-## 🔑 Required API Keys
+The project is operational with automated ingestion, training, registry updates, and dashboard delivery.
 
-| Key | Where to get | Free tier |
-|---|---|---|
-| `AQICN_TOKEN` | https://aqicn.org/data-platform/token/ | ✅ Yes |
-| `OPENWEATHER_API_KEY` | https://openweathermap.org/api | ✅ Yes (current weather) |
-| `HOPSWORKS_API_KEY` | https://app.hopsworks.ai → Settings → API Keys | ✅ Free tier available |
+## 🧾 Author
 
----
+Built by **Shehryar Naveed**.
 
-## 🤖 Models Trained
+## 🤝 Acknowledgements
 
-Each of the three forecast horizons (24h, 48h, 72h) trains four candidates:
-
-- **Ridge Regression** — linear baseline
-- **Random Forest** — robust non-linear baseline
-- **Gradient Boosting** — strong ensemble baseline
-- **XGBoost** — typically the best performer
-
-The model with the lowest RMSE on the held-out test set is registered per horizon.
+1. Open-Meteo API for weather and air quality data
+2. MongoDB Atlas for managed data infrastructure
+3. DagsHub + MLflow for experiment tracking and model lifecycle
+4. Streamlit for rapid data application delivery
 
 ---
 
-## 📊 Features Engineered
-
-| Category | Features |
-|---|---|
-| Time-based | `hour`, `day_of_week`, `month`, `is_weekend` |
-| Pollutants | `pm25`, `pm10`, `o3`, `no2`, `co`, `so2` |
-| Weather | `temperature`, `humidity`, `pressure`, `wind_speed`, `wind_deg`, `visibility` |
-| Lag | `aqi_lag_1h`, `aqi_lag_3h`, `aqi_lag_6h`, `aqi_lag_12h`, `aqi_lag_24h` |
-| Rolling | `aqi_roll_mean_3h`, `aqi_roll_mean_6h`, `aqi_roll_mean_24h` |
-| Derived | `aqi_change_rate` (current − 3h-ago AQI) |
-
----
-
-## 🧪 Running Tests
-
-```bash
-pytest tests/ -v --cov=pipelines --cov-report=term-missing
-```
-
----
-
-## 🚀 CI/CD Automation
-
-Add these secrets in **GitHub → Repo → Settings → Secrets and variables → Actions**:
-
-| Secret | Value |
-|---|---|
-| `AQICN_TOKEN` | Your AQICN token |
-| `OPENWEATHER_API_KEY` | Your OpenWeather key |
-| `HOPSWORKS_API_KEY` | Your Hopsworks API key |
-| `HOPSWORKS_PROJECT` | Your Hopsworks project name |
-
-Add these **variables** (not secrets — they're non-sensitive):
-
-| Variable | Example |
-|---|---|
-| `CITY_NAME` | `lahore` |
-| `CITY_LAT` | `31.5204` |
-| `CITY_LON` | `74.3587` |
-| `AQICN_STATION` | `@7236` |
-
----
-
-## 🌐 Deploying the Dashboard (Free)
-
-1. Push your repo to GitHub.
-2. Go to [share.streamlit.io](https://share.streamlit.io) → **New app**.
-3. Set **Main file path** to `app/dashboard.py`.
-4. Under **Advanced settings → Secrets**, paste:
-   ```toml
-   HOPSWORKS_API_KEY = "your_key"
-   HOPSWORKS_PROJECT = "aqi_predictor"
-   ```
-5. Click **Deploy** — your dashboard is live at a free `.streamlit.app` URL.
-
----
-
-## 📋 Final Submission Checklist
-
-- [x] End-to-end AQI prediction system
-- [x] Scalable, automated pipeline (GitHub Actions)
-- [x] Interactive dashboard (Streamlit + Plotly)
-- [x] SHAP feature importance explanations
-- [x] Hazard alerts for dangerous AQI levels
-- [x] Multiple models compared (Ridge, RF, GB, XGBoost)
-- [x] EDA script with trend / correlation / time-pattern plots
-- [x] Unit test suite
-- [x] Full documentation (see `DOCUMENTATION.md`)
-
----
-
-## 👤 Author
-
-Shehryar — Final Year CS Project, University of Management and Technology (UMT), Lahore
+⭐ If this project helps you, consider starring the repository and sharing it.
