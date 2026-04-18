@@ -4,7 +4,7 @@
 
 The Streamlit dashboard is deployed on Hugging Face Spaces and serves real-time AQI insights and 3-day forecasts.
 
-[![Live App](https://img.shields.io/badge/🌐_Open-Live_Dashboard-FFD21E)](https://shehrazsarwar-pearls-aqi-predictor.hf.space) ![App Status]
+[![Live App](https://img.shields.io/badge/🌐_Open-Live_Dashboard-FFD21E)](https://shehrazsarwar-pearls-aqi-predictor.hf.space)
 
 ### 🛰️ Availability Monitoring
 
