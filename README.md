@@ -1,9 +1,4 @@
-# 🧭 Pearls AQI Predictor: End-to-End MLOps for Air Quality Forecasting
-
-![Hourly Data](https://github.com/ShehrazSarwar/pearls-aqi-predictor/actions/workflows/hourly_data.yml/badge.svg) ![Daily Training](https://github.com/ShehrazSarwar/pearls-aqi-predictor/actions/workflows/daily_model.yml/badge.svg)
-
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/ShehrazSarwar/pearls-aqi-predictor)
-[![Project Report](https://img.shields.io/badge/📘_Read-Project_Report-1f6feb?style=for-the-badge)](https://github.com/ShehrazSarwar/pearls-aqi-predictor/blob/main/Project%20Report.pdf)
+# 🧭 Serverless AQI Predictor: End-to-End MLOps for Air Quality Forecasting
 
 ## 🌐 Live App
 
