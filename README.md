@@ -58,7 +58,7 @@ Runs daily to retrain and refresh production quality.
 
 ```text
 .
-pearls-aqi-predictor/
+serverless_aqi_forecasting_pipeline/
 ├── .github/workflows/
 │   ├── hourly_data.yml
 │   └── daily_model.yml
