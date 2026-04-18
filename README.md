@@ -1,11 +1,5 @@
 # 🧭 Serverless AQI Predictor: End-to-End MLOps for Air Quality Forecasting
 
-## 🌐 Live App
-
-The Streamlit dashboard is deployed on Hugging Face Spaces and serves real-time AQI insights and 3-day forecasts.
-
-[![Live App](https://img.shields.io/badge/🌐_Open-Live_Dashboard-FFD21E)](https://shehrazsarwar-pearls-aqi-predictor.hf.space)
-
 ### 🛰️ Availability Monitoring
 
 To keep a serverless deployment responsive, the app receives scheduled heartbeat checks from UptimeRobot every 5 minutes.
