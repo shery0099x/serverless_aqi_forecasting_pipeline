@@ -29,8 +29,8 @@ The objective is not only forecasting, but continuous model improvement through 
 
 ## 🧭 Architecture
 
-![System Architecture](<img width="1181" height="912" alt="architecture" src="https://github.com/user-attachments/assets/bdf71328-9331-4fdf-9ff5-5350a9ba28f0" />
- "AQI Predictor System Architecture")
+<img width="1181" height="912" alt="architecture" src="https://github.com/user-attachments/assets/c4a92df3-1064-423c-b918-cc9688300a01" />
+
 
 ## 🛠️ Pipeline Workflow
 
