@@ -6,7 +6,7 @@ To keep a serverless deployment responsive, the app receives scheduled heartbeat
 
 ## 📘 Project Overview
 
-This repository implements a production-style MLOps system for forecasting PM2.5 concentration in Karachi, Pakistan across three horizons: 24h, 48h, and 72h.
+This repository implements a production-style MLOps system for forecasting PM2.5 concentration in Lahore, Pakistan across three horizons: 24h, 48h, and 72h.
 
 Core stack:
 
