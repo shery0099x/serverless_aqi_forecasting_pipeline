@@ -1,0 +1,46 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+
+# Notebook artifacts
+.ipynb_checkpoints/
+
+# IDE/editor folders
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local sqlite/state files
+*.sqlite
+*.sqlite3
+*.db
+.cache.sqlite
+
+# Local logs and temp files
+*.log
+*.tmp
+*.temp
+
+# Streamlit and Python local config
+.streamlit/secrets.toml
+
+# Local documents not needed in repo
+Project Report.docx
+Project Report.pdf

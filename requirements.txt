@@ -1,0 +1,16 @@
+streamlit
+matplotlib
+pandas==2.2.3
+numpy==2.2.5
+python-dotenv
+pymongo[srv]
+scikit-learn
+xgboost
+lightgbm
+mlflow-skinny
+dagshub
+cloudpickle
+plotly
+psutil==7.0.0
+pyarrow>=21.0.0
+scipy==1.15.3
